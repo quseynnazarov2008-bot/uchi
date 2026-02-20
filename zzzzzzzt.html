@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мадина Сулиддиновна - Русский язык и литература</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; margin:0; padding:0; background:#f7f9fc; color:#1b2a49; }
+header { background:#1b2a49; color:white; padding:40px 20px; text-align:center; border-bottom-left-radius:25px; border-bottom-right-radius:25px; box-shadow:0 12px 30px rgba(0,0,0,0.15); }
+header h1 { margin:0; font-size:2.6em; font-weight:700; }
+header div { font-size:1.2em; margin-top:6px; font-weight:500; color:#cfd8e3; }
+.description { max-width:750px; margin:35px auto; background:#ffffff; padding:35px; border-radius:25px; box-shadow:0 10px 30px rgba(0,0,0,0.07); transition: transform 0.3s, box-shadow 0.3s; }
+.description:hover { transform: translateY(-6px); box-shadow:0 15px 40px rgba(0,0,0,0.1); }
+.description p { margin:12px 0; font-size:1.15em; line-height:1.8; }
+.contact a { color:#1b2a49; text-decoration:none; font-weight:500; }
+#search-container { text-align:center; margin:45px 0; }
+#search { width:80%; max-width:520px; padding:16px; font-size:1.05em; border:2px solid #1b2a49; border-radius:25px; outline:none; box-shadow:0 6px 20px rgba(0,0,0,0.05); transition:0.3s; background:#e6ecf4; color:#1b2a49; }
+#search:focus { border-color:#0f1c33; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
+#suggestions { width:80%; max-width:520px; margin:12px auto; background:white; border-radius:18px; box-shadow:0 10px 25px rgba(0,0,0,0.08); display:none; text-align:left; overflow:hidden; }
+#suggestions div { padding:15px; cursor:pointer; border-bottom:1px solid #eee; transition: background 0.2s, color 0.2s; color:#1b2a49; font-weight:500; }
+#suggestions div:last-child { border-bottom:none; }
+#suggestions div:hover { background:#f0f4f8; color:#0f1c33; }
+#phrases-btn { display:block; margin:30px auto; padding:18px 30px; background:linear-gradient(135deg,#1b2a49,#0f1c33); color:white; border:none; border-radius:30px; font-size:1.15em; font-weight:600; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:0.3s; }
+#phrases-btn:hover { transform:translateY(-3px); box-shadow:0 12px 35px rgba(0,0,0,0.12); }
+#result { max-width:780px; margin:35px auto; display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:22px; }
+.card { background:white; padding:25px; border-radius:25px; box-shadow:0 12px 35px rgba(0,0,0,0.07); transition: transform 0.3s, box-shadow 0.3s; }
+.card:hover { transform: translateY(-7px); box-shadow:0 18px 45px rgba(0,0,0,0.1); }
+.card h2 { color:#0f1c33; font-size:1.6em; margin-bottom:12px; }
+.card h3 { color:#1b2a49; margin-top:10px; font-weight:600; }
+.card p { margin:6px 0; line-height:1.7; }
+.category-title { text-align:center; margin:30px 0 15px; color:#0f1c33; font-size:1.5em; font-weight:700; border-bottom:2px solid #1b2a49; display:inline-block; padding-bottom:5px; }
+footer { background:#1b2a49; color:white; text-align:center; padding:28px; margin-top:40px; font-size:1em; border-top-left-radius:15px; border-top-right-radius:15px; }
+@media(max-width:600px){ #search { width:90%; } #suggestions { width:90%; } #phrases-btn { width:90%; } .description, .card { margin:20px; padding:20px; } }
+</style>
+</head>
+<body>
+
+<header>
+<h1>Мадина Сулиддиновна</h1>
+<div>Учитель русского языка и литературы</div>
+</header>
+
+<div class="description">
+<p>Работает с 5–11 классами</p>
+<p>Подготовка к выпускному экзамену 9 и 11 классов</p>
+<p>Подготовка абитуриентов</p>
+<p>ПУР Сертификация</p>
+<p>Занятия проводятся 3 раза в неделю по 2 часа</p>
+<p>Преподаёт русский язык и литературу</p>
+<div class="contact">
+Instagram: <a href="https://instagram.com/rusliteratura" target="_blank">rusliteratura</a><br>
+Телефон: +994 (55) 706 26 39
+</div>
+</div>
+
+<div id="search-container">
+<input type="text" id="search" placeholder="Введите тему или правило русского языка...">
+<div id="suggestions"></div>
+<button id="phrases-btn">Фразеологизмы</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+// ====== ПРАВИЛА ======
+const rules=[
+{name:"Существительное",desc:"Часть речи, которая обозначает предмет, явление или лицо.",example:"стол, книга, учительница",advice:"Обратите внимание на род, число и падеж."},
+{name:"Прилагательное",desc:"Часть речи, которая обозначает признак предмета.",example:"красивый, высокий",advice:"Согласуется с существительным в роде, числе и падеже."},
+{name:"Местоимение",desc:"Слова, которые заменяют существительные.",example:"он, она, это",advice:"Помогают избегать повторов слов."},
+{name:"Глагол",desc:"Часть речи, которая обозначает действие или состояние.",example:"бежать, думать, спать",advice:"Обратите внимание на время и спряжение."},
+{name:"Наречие",desc:"Часть речи, которая обозначает признак действия.",example:"быстро, красиво",advice:"Не изменяется по родам и числам."},
+{name:"Предлог",desc:"Служебная часть речи, которая выражает отношение между словами.",example:"в, на, с",advice:"Всегда требует определённого падежа."},
+{name:"Союз",desc:"Служебная часть речи, которая соединяет слова и предложения.",example:"и, но, потому что",advice:"Помогает строить сложные предложения."},
+{name:"Междометие",desc:"Часть речи, выражающая эмоции.",example:"ах, ой, ура",advice:"Не изменяется и не склоняется."},
+{name:"Числительное",desc:"Часть речи, которая обозначает количество или порядок.",example:"два, третий",advice:"Согласуется с существительным."},
+{name:"Причастие",desc:"Часть речи, которая обозначает признак предмета по действию.",example:"прочитанный, пишущий",advice:"Согласуется с существительным."},
+{name:"Деепричастие",desc:"Часть речи, обозначающая добавочное действие.",example:"читая, написав",advice:"Не изменяется по родам и числам."},
+{name:"Орфография",desc:"Правописание слов и их частей.",example:"безударные гласные, приставки, суффиксы",advice:"Учите правила по темам."},
+{name:"Пунктуация",desc:"Знаки препинания в предложениях.",example:"запятая, тире, двоеточие",advice:"Обратите внимание на правила постановки."},
+{name:"Словообразование",desc:"Образование новых слов с помощью корня, приставки, суффикса.",example:"читать → перечитать",advice:"Следите за значением приставок и суффиксов."},
+{name:"Синтаксис",desc:"Структура словосочетаний и предложений.",example:"Я читаю книгу.",advice:"Разбирайте предложения по членам."},
+{name:"Стили речи",desc:"Художественный, деловой, публицистический.",example:"публицистический стиль в газетах",advice:"Учите особенности каждого стиля."}
+];
+
+// ===== ФРАЗЕОЛОГИЗМЫ ======
+const phrases=[
+{category:"Части тела",name:"Водить за нос",desc:"обманывать."},
+{category:"Части тела",name:"Зарубить на носу",desc:"запомнить навсегда."},
+{category:"Части тела",name:"Клевать носом",desc:"дремать."},
+{category:"Части тела",name:"Повесить нос",desc:"расстроиться."},
+{category:"Части тела",name:"С гулькин нос",desc:"очень мало."},
+{category:"Части тела",name:"Смотреть сквозь пальцы",desc:"намеренно не замечать чего-то плохого."},
+{category:"Части тела",name:"Умывать руки",desc:"устраняться от ответственности."},
+{category:"Части тела",name:"Мастер на все руки",desc:"умелый."},
+{category:"Части тела",name:"Рукой подать",desc:"очень близко."},
+{category:"Части тела",name:"Спустя рукава",desc:"небрежно, лениво."},
+{category:"Части тела",name:"Засучив рукава",desc:"усердно, старательно."},
+{category:"Части тела",name:"Глазом не моргнуть",desc:"не раздумывая или не испугавшись."},
+{category:"Части тела",name:"Хлопать ушами",desc:"слушать не внимательно, упускать главное."},
+{category:"Части тела",name:"Держать ушки на макушке",desc:"быть начеку, проявлять бдительность."},
+{category:"Скорость и Время",name:"В час по чайной ложке",desc:"крайне медленно."},
+{category:"Скорость и Время",name:"Черепашьим шагом",desc:"медленно."},
+{category:"Скорость и Время",name:"Сломя голову",desc:"очень быстро."},
+{category:"Скорость и Время",name:"Во все лопатки",desc:"стремительно."},
+{category:"Скорость и Время",name:"В мгновение ока",desc:"моментально."},
+{category:"Скорость и Время",name:"Со всех ног",desc:"очень быстро."},
+{category:"Скорость и Время",name:"Битый час",desc:"очень долго."},
+{category:"Скорость и Время",name:"За тридевять земель",desc:"очень далеко."},
+{category:"Скорость и Время",name:"Когда рак на горе свистнет",desc:"никогда."},
+{category:"Скорость и Время",name:"После дождичка в четверг",desc:"никогда."},
+{category:"Количество и Качество",name:"Кот наплакал",desc:"мало."},
+{category:"Количество и Качество",name:"По пальцам пересчитать",desc:"мало."},
+{category:"Количество и Качество",name:"Куры не клюют",desc:"очень много (обычно о деньгах)."},
+{category:"Количество и Качество",name:"Хоть пруд пруди",desc:"очень много."},
+{category:"Количество и Качество",name:"Тьма тьмущая",desc:"огромное количество."},
+{category:"Количество и Качество",name:"Комар носа не подточит",desc:"сделано безупречно."},
+{category:"Количество и Качество",name:"Тяп-ляп",desc:"небрежно, на скорую руку."},
+{category:"Количество и Качество",name:"Через пень-колоду",desc:"плохо, кое-как."},
+{category:"Речь и Общение",name:"Держать язык за зубами",desc:"молчать, хранить секрет."},
+{category:"Речь и Общение",name:"Язык проглотить",desc:"замолчать (от страха или смущения)."},
+{category:"Речь и Общение",name:"За словом в карман не лезет",desc:"находчив в споре."},
+{category:"Речь и Общение",name:"Заговаривать зубы",desc:"отвлекать от сути дела."},
+{category:"Речь и Общение",name:"Точить лясы",desc:"болтать впустую."},
+{category:"Речь и Общение",name:"Лить воду",desc:"говорить много лишнего, без смысла."},
+{category:"Речь и Общение",name:"Как об стенку горох",desc:"бесполезно говорить (не слушает)."},
+{category:"Книжные и Мифологические",name:"Авгиевы конюшни",desc:"запущенное место, крайний беспорядок."},
+{category:"Книжные и Мифологические",name:"Ахиллесова пята",desc:"слабое, уязвимое место."},
+{category:"Книжные и Мифологические",name:"Дамоклов меч",desc:"навиcшая угроза."},
+{category:"Книжные и Мифологические",name:"Кануть в Лету",desc:"навсегда исчезнуть, быть забытым."},
+{category:"Книжные и Мифологические",name:"Пиррова победа",desc:"успех, достигнутый слишком дорогой ценой."},
+{category:"Книжные и Мифологические",name:"Сизифов труд",desc:"тяжелая и бесполезная работа."},
+{category:"Книжные и Мифологические",name:"Яблоко раздора",desc:"причина спора или вражды."}
+];
+
+// ===== ПОИСК =====
+const searchInput=document.getElementById('search');
+const suggestions=document.getElementById('suggestions');
+const result=document.getElementById('result');
+
+searchInput.addEventListener('input',function(){
+const query=this.value.toLowerCase();
+suggestions.innerHTML='';
+if(!query){ suggestions.style.display='none'; return;}
+const matches=rules.filter(r=>r.name.toLowerCase().includes(query));
+if(matches.length>0){
+matches.forEach(m=>{
+const div=document.createElement('div');
+div.textContent=m.name;
+div.addEventListener('click',function(){ searchInput.value=m.name; showResult(m); suggestions.style.display='none';});
+suggestions.appendChild(div);
+});
+suggestions.style.display='block';
+}else{ suggestions.style.display='none'; }
+});
+
+function showResult(rule){
+result.innerHTML=`<div class="card">
+<h2>${rule.name}</h2>
+<p><strong>Определение:</strong> ${rule.desc}</p>
+<p><strong>Пример:</strong> ${rule.example || '-'}</p>
+<p><strong>Совет:</strong> ${rule.advice || '-'}</p>
+</div>`;
+}
+
+// ===== ФРАЗЕОЛОГИЗМЫ =====
+document.getElementById('phrases-btn').addEventListener('click',function(){
+result.innerHTML='';
+const categories=[...new Set(phrases.map(p=>p.category))];
+categories.forEach(cat=>{
+const catHeader=document.createElement('div');
+catHeader.className='category-title';
+catHeader.textContent=cat;
+result.appendChild(catHeader);
+phrases.filter(p=>p.category===cat).forEach(p=>{
+const card=document.createElement('div');
+card.className='card';
+card.innerHTML=`<h3>${p.name}</h3><p>${p.desc}</p>`;
+result.appendChild(card);
+});
+});
+});
+</script>
+
+<footer>
+© 2026 Мадина Сулиддиновна – Учитель русского языка и литературы
+</footer>
+
+</body>
+</html>
